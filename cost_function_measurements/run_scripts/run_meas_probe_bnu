@@ -1,0 +1,85 @@
+#!/bin/bash
+set -u
+
+if [ $# = 2 ]
+then
+  HWTNO="$1"
+  SKEW_MIN="$2"
+  SKEW_MAX="$2"
+  L_DOM_MIN="0"
+  L_DOM_MAX="29"
+else
+  if [ $# = 4 ]
+  then
+    HWTNO="$1"
+    SKEW_MIN="$2"
+    SKEW_MAX="$2"
+    L_DOM_MIN="$3"
+    L_DOM_MAX="$4"
+  else
+    echo "usage: $0 <hwtno> <skew> [<l_dom_min> <l_dom_max>]?"
+    exit
+  fi
+fi
+
+# run_meas
+
+L_KEY_MIN="0"
+L_KEY_MAX="25"
+L_FK_MIN="0"
+L_FK_MAX="29"
+L_RED_MIN="0"
+L_RED_MAX="6"
+SCALE_FACTORS=(1.0 1.5 1.3 1.7)
+#SCALE_FACTORS=(1.0 1.5)
+#SCALE_FACTORS=(1.3 1.7)
+
+
+# determine hostname
+set +u
+if [[ ! -z "${HOST}" ]]; then
+  host="${HOST}"
+elif [[ $(hostname) ]]; then
+  host=$(hostname)
+elif [[ $(uname -n) ]]; then
+  host=$(uname -n)
+else
+  echo "# Warning: hostname could not be determined."
+fi
+set -u
+
+compile_host="obi-zero"
+EXE="${HOME}/src/hashjoin/impl/build/${compile_host}/main_experiment8.out"
+ODIR="${HOME}/src/hashjoin/out/experiment8/"
+
+[[ ! -f "${EXE}" ]] && echo "Error: Executable '${EXE}' does not exist." && exit 1
+
+
+echo "launch on ${host}@${HWTNO}"
+
+START=`date +"%Y.%m.%d:%H.%M.%S"`
+echo "# start: ${START}"
+CURR=`date +"d%Y_%m_%d_t%H_%M_%S"`
+
+OF="${host}_${CURR}"
+
+PARAM_A="--hwtno ${HWTNO} --od ${ODIR} --of ${OF} -m probe_bnu"
+PARAM_K="--l_key_min ${L_KEY_MIN} --l_key_max ${L_KEY_MAX}"
+PARAM_F="--l_fk_min  ${L_FK_MIN}  --l_fk_max  ${L_FK_MAX}"
+PARAM_R="--l_red_min ${L_RED_MIN} --l_red_max ${L_RED_MAX}"
+PARAM_D="--l_dom_min ${L_DOM_MIN} --l_dom_max ${L_DOM_MAX}"
+PARAM_S="--skew_min  ${SKEW_MIN}  --skew_max  ${SKEW_MAX}"
+
+echo "${PARAM_A} ${PARAM_K} ${PARAM_F} ${PARAM_R} ${PARAM_S}"
+
+for factor in "${SCALE_FACTORS[@]}"; do
+  PARAM_X="--key_scale_factor=${factor} --fk_scale_factor=${factor}"
+  echo "scale factors: ${PARAM_X}"
+  ${EXE} ${PARAM_A} ${PARAM_K} ${PARAM_F} ${PARAM_R} ${PARAM_D} ${PARAM_S} ${PARAM_X} \
+    >> z_run_meas_probe_bnu_${OF}.prot
+done
+
+END=`date +"%Y.%m.%d:%H.%M.%S"`
+echo "# start: ${START}, end: ${END}"
+
+echo "# FIN"

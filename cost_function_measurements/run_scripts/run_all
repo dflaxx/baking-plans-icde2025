@@ -1,0 +1,30 @@
+#!/bin/bash
+
+
+# processes are bound to one CPU core
+CPU_CORE=0
+
+
+# measure build
+
+./run_meas_build_bun "${CPU_CORE}"
+./run_meas_build_bnu "${CPU_CORE}"
+
+
+# measure probe
+
+## - unique build side
+FK_DOMAIN_MIN=0   # in log2
+FK_DOMAIN_MAX=29
+SKEW=0  # uniform distribution of foreign keys
+./run_meas_probe_bun "${CPU_CORE}" "${SKEW}" "${FK_DOMAIN_MIN}" "${FK_DOMAIN_MAX}"
+SKEW=1  # Zipf distribution of foreign keys
+./run_meas_probe_bun "${CPU_CORE}" "${SKEW}" "${FK_DOMAIN_MIN}" "${FK_DOMAIN_MAX}"
+
+## - non-unique build side
+FK_DOMAIN_MIN=0   # in log2
+FK_DOMAIN_MAX=29
+SKEW=0  # uniform distribution of foreign keys
+./run_meas_probe_bnu "${CPU_CORE}" "${SKEW}" "${FK_DOMAIN_MIN}" "${FK_DOMAIN_MAX}"
+SKEW=1  # Zipf distribution of foreign keys
+./run_meas_probe_bnu "${CPU_CORE}" "${SKEW}" "${FK_DOMAIN_MIN}" "${FK_DOMAIN_MAX}"

@@ -1,0 +1,59 @@
+# Prerequisites
+*.d
+
+# Compiled Object files
+*.slo
+*.lo
+*.o
+*.obj
+
+# Precompiled Headers
+*.gch
+*.pch
+
+# Compiled Dynamic libraries
+*.so
+*.dylib
+*.dll
+
+# Fortran module files
+*.mod
+*.smod
+
+# Compiled Static libraries
+*.lai
+*.la
+*.a
+*.lib
+
+# Executables
+bin/
+*.exe
+*.out
+*.app
+
+# CTAGS file
+tags 
+
+# Compilation database (bear)
+compile_commands.json
+
+# clangd
+.clangd/
+.cache/
+
+
+# -- Editors/IDEs --
+
+*.swp
+
+# vim
+.vimrc
+
+# VS Code
+.vscode/*
+*.code-workspace
+
+# -- Filesystem --
+.nfs*
+
