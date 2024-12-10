@@ -14,7 +14,7 @@
 - `mk_boxplots.R`: R script to make box plots from measurements.
 
 
-## Cardinality estimator:
+## Cardinality estimators
 
 - `ia_m`:        CE_{IA-M}
 - `ia_l`:        CE_{IA-L}
